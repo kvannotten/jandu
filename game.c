@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <time.h>
 
 SDL_Window* gWindow = NULL;
 SDL_Renderer* gRenderer = NULL;
 
-SDL_Rect gSpriteClips[NOT_USED];
+SDL_Rect gSpriteClips[STONE + 1];
 SDL_Rect gSpriteTrees[LVL_SEVEN + 1];
 
 typedef struct {
@@ -21,6 +22,8 @@ Texture gSpriteSheetTexture;
 void render(Texture* texture, int x, int y, SDL_Rect* clip);
 
 bool SDLInit() {
+  srand(time(NULL));
+
   if( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
     printf("SDL could not be initialized. Error: %s\n", SDL_GetError());
     return false;
@@ -169,11 +172,12 @@ bool loadMedia() {
   return true;
 }
 
+const int offset_x = 200;
+const int offset_y = 75;
+Unit currentUnit = {.level = LVL_ONE, .type = PROGRESSION_PLANTS };
+
 void SDLDraw(Map* map) {
   SDL_RenderClear(gRenderer);
-
-  int offset_x = 200;
-  int offset_y = 75;
 
   for(int i = 0; i < FIELD_SIZE; i++) {
     for(int j = 0; j < FIELD_SIZE; j++) {
@@ -187,6 +191,8 @@ void SDLDraw(Map* map) {
           unitY += gSpriteClips[tt].h/2 - gSpriteTrees[u.level].h;
         } else if(u.level == LVL_THREE){
           unitY -= gSpriteClips[tt].h/2 - gSpriteTrees[u.level].h/4;
+        } else if(u.level == LVL_SEVEN) {
+          unitY -= gSpriteClips[tt].h;
         } else {
           unitY -= gSpriteClips[tt].h/2 - gSpriteTrees[u.level].h/2;
         }
@@ -195,32 +201,53 @@ void SDLDraw(Map* map) {
     }
   }
 
-  SDL_RenderPresent(gRenderer);
+  render(&gSpriteSheetTexture, 0, 0, &gSpriteTrees[currentUnit.level]);
 
+  SDL_RenderPresent(gRenderer);
+}
+
+Unit randomUnit() {
+  int r = rand() % 100;
+  if (r <= 80) {
+    return (Unit){.level = LVL_SIX, .type = PROGRESSION_PLANTS };
+  } else if(r <= 95) {
+    return (Unit){.level = LVL_TWO, .type = PROGRESSION_PLANTS };
+  } else if(r <= 98) {
+    return (Unit){.level = LVL_THREE, .type = PROGRESSION_PLANTS };
+  } else {
+    return (Unit){.level = LVL_FOUR, .type = PROGRESSION_PLANTS };
+  }
+}
+
+void SDLListenForEvents(Map* map, bool* quit) {
   SDL_Event e;
 
   if(SDL_WaitEvent(&e) != 0) {
     int x, y;
     int coordx, coordy;
     switch(e.type) {
+
     case SDL_MOUSEBUTTONDOWN:
       SDL_GetMouseState(&x, &y);
-      // printf("Mouse: %d, %d\n", x, y);
+      // convert mouse coordinates to grid coordinates
       coordx = floor((x-offset_x -1)/gSpriteClips[0].w);
       coordy = floor((y-offset_y)/(gSpriteClips[0].h - 38));
+
       if(isBuildable(map, coordx, coordy)) {
-        map->unitField[coordy][coordx].level++;
+        map->unitField[coordy][coordx] = currentUnit;
         performUpgrades(map, coordx, coordy);
+        currentUnit = randomUnit();
       }
-      // printf("Coords: %d, %d\n", coordx, coordy);
       break;
+
     case SDL_KEYDOWN:
       if(e.key.keysym.sym == SDLK_q) {
-        exit(0);
+        *quit = true;
       } else if(e.key.keysym.sym == SDLK_p) {
         printMap(map);
       }
       break;
+
     }
   }
 }

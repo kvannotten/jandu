@@ -7,4 +7,6 @@ void SDLClose();
 
 void SDLDraw(Map*);
 
+void SDLListenForEvents(Map*,bool*);
+
 bool loadMedia();

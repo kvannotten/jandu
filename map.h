@@ -27,8 +27,6 @@ typedef enum {
   DIRT,
   WATER,
   STONE,
-
-  NOT_USED // keep this at the end
 } TileType;
 
 typedef struct {

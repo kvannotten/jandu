@@ -17,7 +17,12 @@ void performUpgrades(Map* map, int x, int y) {
 
   int length = size(&coords);
   if (length >= 3)  {
+    if(map->unitField[y][x].level == LVL_SEVEN) {
+      // no more upgrades to do
+      return;
+    }
     map->unitField[y][x].level++;
+
     for(int i = 0; i < length; i++) {
       Coord c = get(&coords, i);
       if(c.x != x || c.y != y) {

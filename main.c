@@ -10,13 +10,14 @@ int main(int argc, char* args[]) {
     return 33;
   }
 
-  bool won = false;
+  bool quit = false;
   Map map;
 
   loadMap(&map, "foo.dat");
 
-  while(!won) {
+  while(!quit) {
     SDLDraw(&map);
+    SDLListenForEvents(&map, &quit);
   }
 
   SDLClose();
