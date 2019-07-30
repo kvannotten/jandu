@@ -24,3 +24,6 @@ You can only place a unit on the dirt tiles. Grass, water and stone are to remai
 ## Screenshots
 
 ![Screenshot1](https://ddd.coder.town/files/jandu.png)
+
+## Credits
+Art by [@ctimmerm]( https://github.com/ctimmerm )
