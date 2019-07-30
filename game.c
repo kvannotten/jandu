@@ -209,7 +209,7 @@ void SDLDraw(Map* map) {
 Unit randomUnit() {
   int r = rand() % 100;
   if (r <= 80) {
-    return (Unit){.level = LVL_SIX, .type = PROGRESSION_PLANTS };
+    return (Unit){.level = LVL_ONE, .type = PROGRESSION_PLANTS };
   } else if(r <= 95) {
     return (Unit){.level = LVL_TWO, .type = PROGRESSION_PLANTS };
   } else if(r <= 98) {
