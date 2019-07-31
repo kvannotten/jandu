@@ -5,8 +5,8 @@ bool SDLInit();
 
 void SDLClose();
 
-void SDLDraw(Map*);
+void SDLDraw(const Map*);
 
-void SDLListenForEvents(Map*,bool*);
+void SDLHandleUserEvents(Map*,bool*);
 
 bool loadMedia();

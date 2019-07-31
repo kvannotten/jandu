@@ -17,7 +17,7 @@ int main(int argc, char* args[]) {
 
   while(!quit) {
     SDLDraw(&map);
-    SDLListenForEvents(&map, &quit);
+    SDLHandleUserEvents(&map, &quit);
   }
 
   SDLClose();

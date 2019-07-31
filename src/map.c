@@ -17,16 +17,22 @@ void performUpgrades(Map* map, int x, int y) {
 
   int length = size(&coords);
   if (length >= 3)  {
-    if(map->unitField[y][x].level == LVL_SEVEN) {
-      // no more upgrades to do
+    if(map->unitField[y][x].level == LVL_SEVEN && map->unitField[y][x].type == PROGRESSION_PLANTS) {
+      // no more upgrades to do for trees
       return;
     }
+
+    if(map->unitField[y][x].level == LVL_SIX && map->unitField[y][x].type == PROGRESSION_CATS) {
+      // no more upgrades to do for cats
+      return;
+    }
+
     map->unitField[y][x].level++;
 
     for(int i = 0; i < length; i++) {
       Coord c = get(&coords, i);
       if(c.x != x || c.y != y) {
-        map->unitField[c.y][c.x].level = NONE;
+        map->unitField[c.y][c.x] = (Unit){.level = NONE, .type = PROGRESSION_PLANTS};
       }
     }
     // once an upgrade has happened, we have to 
@@ -47,21 +53,33 @@ Coord travel[] = {
 void checkConnected(Map* map, Coord coord, Vector* coords) {
   int loops = sizeof(travel) / sizeof(travel[1]);
   Unit currentUnit = map->unitField[coord.y][coord.x];
+
   for (int i = 0; i < loops; i++) {
     int x = coord.x + travel[i].x;
     int y = coord.y + travel[i].y;
+    Unit u = map->unitField[y][x];
 
     if(x < 0 || x >= FIELD_SIZE || y < 0 || y >= FIELD_SIZE) {
       continue;
     }
+    
+    // only thombstones and higher need to be checked
+    if(u.type == PROGRESSION_CATS && u.level < LVL_TWO) {
+      continue;
+    }
 
-    if(map->unitField[y][x].level != currentUnit.level) {
+    if(u.level != currentUnit.level) {
+      continue;
+    }
+
+    if(u.type != currentUnit.type) {
       continue;
     }
 
     if(find_value(coords, (Coord){.x = x, .y = y}) != -1) {
       continue;
     }
+    
 
     if(map->unitField[y][x].level == currentUnit.level) {
       Coord c = { .x = x, .y  = y };
@@ -152,5 +170,84 @@ void loadMap(Map* map, char* file) {
 }
 
 bool isBuildable(const Map* map, int x, int y) {
+  if(x >= FIELD_SIZE || y >= FIELD_SIZE || x < 0 || y < 0) {
+    return false;
+  }
   return map->field[y][x] == DIRT && map->unitField[y][x].level == NONE;
+}
+
+void moveCats(Map* map, const Unit* currentUnit, int currentX, int currentY) {
+  Vector catsToMove;
+  init(&catsToMove);
+
+  // collect all the cats we want to move
+  for(int i = 0; i < FIELD_SIZE; i++) {
+    for(int j = 0; j < FIELD_SIZE; j++) {
+      // don't move a cat we just placed
+      if(j == currentY && i == currentX && isCat(currentUnit)) {
+        continue;
+      }
+
+      Unit u = map->unitField[j][i];
+      if(!isCat(&u)) {
+        continue;
+      }
+
+      append(&catsToMove, (Coord){.x = i, .y = j});
+    }
+  }
+
+  // move them or kill them
+  for(int i = 0; i < size(&catsToMove); i++) {
+    int catX = get(&catsToMove, i).x;
+    int catY = get(&catsToMove, i).y;
+
+    // printf("Moving cat %d,%d\n", catX, catY);
+
+    Vector availableCoords;
+    init(&availableCoords);
+
+    int loops = sizeof(travel) / sizeof(travel[1]);
+    for(int k = 0; k < loops; k++) {
+      if(isBuildable(map, catX + travel[k].x, catY + travel[k].y)) {
+        append(&availableCoords, travel[k]);
+        // printf("\tPossible coord: %d,%d because of %d,%d\n", catX + travel[k].x, catY + travel[k].y, travel[k].x, travel[k].y);
+      }
+    }
+    
+    if(size(&availableCoords) < 1) {
+      // kill cat
+      map->unitField[catY][catX].level++;
+      performUpgrades(map, catX, catY);
+
+      free_memory(&availableCoords);
+      continue;
+    }
+
+    int r = rand() % size(&availableCoords);
+    Coord c = get(&availableCoords, r);
+    int x = catX + c.x;
+    int y = catY + c.y;
+
+    map->unitField[y][x] = (Unit){.level = LVL_ONE, .type = PROGRESSION_CATS};
+    map->unitField[catY][catX] = (Unit){.level = NONE, .type = PROGRESSION_PLANTS};
+
+    free_memory(&availableCoords);
+  }
+
+  free_memory(&catsToMove);
+}
+
+bool placeUnit(Map* map, const Unit* unit, int x, int y) {
+  if(isBuildable(map, x, y)) {
+    map->unitField[y][x] = *unit;
+    performUpgrades(map, x, y);
+    
+    // When a unit is placed, also move the cats
+    moveCats(map, unit, x, y);
+
+    return true;
+  }
+
+  return false;
 }

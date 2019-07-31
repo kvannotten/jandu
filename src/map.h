@@ -1,26 +1,7 @@
 #include <stdbool.h>
+#include "unit.h"
 
 #define FIELD_SIZE 6
-
-typedef enum {
-  NONE,
-  LVL_ONE,
-  LVL_TWO,
-  LVL_THREE,
-  LVL_FOUR,
-  LVL_FIVE,
-  LVL_SIX,
-  LVL_SEVEN
-} UnitLevel;
-
-typedef enum {
-  PROGRESSION_PLANTS
-} UnitType;
-
-typedef struct {
-  UnitLevel level;
-  UnitType type;
-} Unit;
 
 typedef enum {
   GRASS,
@@ -46,3 +27,4 @@ void printMap(Map*);
 void loadMap(Map*, char*);
 bool isBuildable(const Map*, int, int);
 void performUpgrades(Map*, int, int);
+bool placeUnit(Map*, const Unit*, int, int);

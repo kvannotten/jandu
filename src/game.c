@@ -9,6 +9,10 @@ SDL_Renderer* gRenderer = NULL;
 
 SDL_Rect gSpriteClips[STONE + 1];
 SDL_Rect gSpriteTrees[LVL_SEVEN + 1];
+SDL_Rect gSpriteCats[LVL_SEVEN + 1];
+
+const int SCREEN_WIDTH = 1024;
+const int SCREEN_HEIGHT = 768;
 
 typedef struct {
   SDL_Texture* texture;
@@ -33,13 +37,13 @@ bool SDLInit() {
     printf("Warning: linear texture filtering not enabled");
   }
 
-  gWindow = SDL_CreateWindow("Jandu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_SHOWN);
+  gWindow = SDL_CreateWindow("Jandu", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
   if(gWindow == NULL) {
     printf("Window could not be created. Error: %s\n", SDL_GetError());
     return false;
   }
 
-  gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED);
+  gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if(gRenderer == NULL) {
     printf("Renderer could not be created. Error: %s\n", SDL_GetError());
     return false;
@@ -113,61 +117,27 @@ bool loadMedia() {
     return false;
   }
   // tiles
-  gSpriteClips[GRASS].x = 118;
-  gSpriteClips[GRASS].y = 186;
-  gSpriteClips[GRASS].w = 108;
-  gSpriteClips[GRASS].h = 132;
+  gSpriteClips[GRASS]     = (SDL_Rect){.x = 118, .y = 186, .w = 108, .h = 132};
+  gSpriteClips[DIRT]      = (SDL_Rect){.x = 110, .y = 362, .w = 108, .h = 128};
+  gSpriteClips[WATER]     = (SDL_Rect){.x = 228, .y = 268, .w = 108, .h = 128};
+  gSpriteClips[STONE]     = (SDL_Rect){.x = 126, .y = 0, .w = 108, .h = 128};
 
-  gSpriteClips[DIRT].x = 110;
-  gSpriteClips[DIRT].y = 362;
-  gSpriteClips[DIRT].w = 108;
-  gSpriteClips[DIRT].h = 128;
+  // tree units
+  gSpriteTrees[LVL_ONE]   = (SDL_Rect){.x = 126, .y = 130, .w = 86, .h = 52};
+  gSpriteTrees[LVL_TWO]   = (SDL_Rect){.x = 214, .y = 130, .w = 66, .h = 52};
+  gSpriteTrees[LVL_THREE] = (SDL_Rect){.x = 338, .y = 268, .w = 96, .h = 124};
+  gSpriteTrees[LVL_FOUR]  = (SDL_Rect){.x = 346, .y = 130, .w = 68, .h = 86};
+  gSpriteTrees[LVL_FIVE]  = (SDL_Rect){.x = 522, .y = 0, .w = 94, .h = 106};
+  gSpriteTrees[LVL_SIX]   = (SDL_Rect){.x = 0, .y = 186, .w = 116, .h = 90};
+  gSpriteTrees[LVL_SEVEN] = (SDL_Rect){.x = 0, .y = 0, .w = 124, .h = 184};
 
-  gSpriteClips[WATER].x = 228;
-  gSpriteClips[WATER].y = 268;
-  gSpriteClips[WATER].w = 108;
-  gSpriteClips[WATER].h = 128;
-
-  gSpriteClips[STONE].x = 126;
-  gSpriteClips[STONE].y = 0;
-  gSpriteClips[STONE].w = 108;
-  gSpriteClips[STONE].h = 128;
-
-  // units
-  gSpriteTrees[LVL_ONE].x = 126;
-  gSpriteTrees[LVL_ONE].y = 130;
-  gSpriteTrees[LVL_ONE].w = 86;
-  gSpriteTrees[LVL_ONE].h = 52;
-
-  gSpriteTrees[LVL_TWO].x = 214;
-  gSpriteTrees[LVL_TWO].y = 130;
-  gSpriteTrees[LVL_TWO].w = 66;
-  gSpriteTrees[LVL_TWO].h = 52;
-
-  gSpriteTrees[LVL_THREE].x = 338;
-  gSpriteTrees[LVL_THREE].y = 268;
-  gSpriteTrees[LVL_THREE].w = 96;
-  gSpriteTrees[LVL_THREE].h = 124;
-
-  gSpriteTrees[LVL_FOUR].x = 346;
-  gSpriteTrees[LVL_FOUR].y = 130;
-  gSpriteTrees[LVL_FOUR].w = 68;
-  gSpriteTrees[LVL_FOUR].h = 86;
-
-  gSpriteTrees[LVL_FIVE].x = 522;
-  gSpriteTrees[LVL_FIVE].y = 0;
-  gSpriteTrees[LVL_FIVE].w = 94;
-  gSpriteTrees[LVL_FIVE].h = 106;
-
-  gSpriteTrees[LVL_SIX].x = 0;
-  gSpriteTrees[LVL_SIX].y = 186;
-  gSpriteTrees[LVL_SIX].w = 116;
-  gSpriteTrees[LVL_SIX].h = 90;
-
-  gSpriteTrees[LVL_SEVEN].x = 0;
-  gSpriteTrees[LVL_SEVEN].y = 0;
-  gSpriteTrees[LVL_SEVEN].w = 124;
-  gSpriteTrees[LVL_SEVEN].h = 184;
+  // cat units
+  gSpriteCats[LVL_ONE]    = (SDL_Rect){.x = 428, .y = 114, .w = 96, .h = 110};
+  gSpriteCats[LVL_TWO]    = (SDL_Rect){.x = 96, .y = 492, .w = 84, .h = 88};
+  gSpriteCats[LVL_THREE]    = (SDL_Rect){.x = 428, .y = 0, .w = 92, .h = 112};
+  gSpriteCats[LVL_FOUR]    = (SDL_Rect){.x = 338, .y = 394, .w = 92, .h = 102};
+  gSpriteCats[LVL_FIVE]    = (SDL_Rect){.x = 228, .y = 184, .w = 116, .h = 82};
+  gSpriteCats[LVL_SIX]    = (SDL_Rect){.x = 0, .y = 278, .w = 116, .h = 82};
 
   return true;
 }
@@ -176,17 +146,28 @@ const int offset_x = 200;
 const int offset_y = 75;
 Unit currentUnit = {.level = LVL_ONE, .type = PROGRESSION_PLANTS };
 
-void SDLDraw(Map* map) {
+void SDLDraw(const Map* map) {
   SDL_RenderClear(gRenderer);
 
   for(int i = 0; i < FIELD_SIZE; i++) {
     for(int j = 0; j < FIELD_SIZE; j++) {
+      // draw playing field tile
       TileType tt = map->field[j][i];
       render(&gSpriteSheetTexture, offset_x + i*gSpriteClips[tt].w, offset_y + j*gSpriteClips[tt].h - j*38, &gSpriteClips[tt]);  
+
+      // if there's a unit on there, draw it
       Unit u = map->unitField[j][i];
-      if(u.level > NONE) {
-        int unitX = floor(offset_x + i*gSpriteClips[tt].w + gSpriteClips[tt].w/2 - gSpriteTrees[u.level].w/2);
-        int unitY = floor(offset_y + j*gSpriteClips[tt].h - 38*j);
+      if (u.level == NONE) {
+        continue;
+      }
+
+      int unitX = floor(offset_x + i*gSpriteClips[tt].w + gSpriteClips[tt].w/2 - gSpriteTrees[u.level].w/2);
+      int unitY = floor(offset_y + j*gSpriteClips[tt].h - 38*j);
+
+      SDL_Rect* clip = NULL;
+
+      switch(u.type) {
+      case PROGRESSION_PLANTS:
         if(u.level < LVL_THREE) {
           unitY += gSpriteClips[tt].h/2 - gSpriteTrees[u.level].h;
         } else if(u.level == LVL_THREE){
@@ -196,33 +177,46 @@ void SDLDraw(Map* map) {
         } else {
           unitY -= gSpriteClips[tt].h/2 - gSpriteTrees[u.level].h/2;
         }
-        render(&gSpriteSheetTexture, unitX, unitY, &gSpriteTrees[u.level]);  
+        clip = &gSpriteTrees[u.level];
+
+      break;
+
+      case PROGRESSION_CATS:
+        clip = &gSpriteCats[u.level];
+
+        break;
+
+      default:
+        break;
+
+      }
+
+      if(clip != NULL) {
+        render(&gSpriteSheetTexture, unitX, unitY, clip);  
       }
     }
   }
 
-  render(&gSpriteSheetTexture, 0, 0, &gSpriteTrees[currentUnit.level]);
+  switch(currentUnit.type) {
+  case PROGRESSION_PLANTS:
+    render(&gSpriteSheetTexture, 0, 0, &gSpriteTrees[currentUnit.level]);
+    break;
+
+  case PROGRESSION_CATS:
+    render(&gSpriteSheetTexture, 0, 0, &gSpriteCats[currentUnit.level]);
+    break;
+
+  default:
+    break;
+  }
 
   SDL_RenderPresent(gRenderer);
 }
 
-Unit randomUnit() {
-  int r = rand() % 100;
-  if (r <= 80) {
-    return (Unit){.level = LVL_ONE, .type = PROGRESSION_PLANTS };
-  } else if(r <= 95) {
-    return (Unit){.level = LVL_TWO, .type = PROGRESSION_PLANTS };
-  } else if(r <= 98) {
-    return (Unit){.level = LVL_THREE, .type = PROGRESSION_PLANTS };
-  } else {
-    return (Unit){.level = LVL_FOUR, .type = PROGRESSION_PLANTS };
-  }
-}
-
-void SDLListenForEvents(Map* map, bool* quit) {
+void SDLHandleUserEvents(Map* map, bool* quit) {
   SDL_Event e;
 
-  if(SDL_WaitEvent(&e) != 0) {
+  while(SDL_PollEvent(&e) != 0) {
     int x, y;
     int coordx, coordy;
     switch(e.type) {
@@ -233,9 +227,7 @@ void SDLListenForEvents(Map* map, bool* quit) {
       coordx = floor((x-offset_x -1)/gSpriteClips[0].w);
       coordy = floor((y-offset_y)/(gSpriteClips[0].h - 38));
 
-      if(isBuildable(map, coordx, coordy)) {
-        map->unitField[coordy][coordx] = currentUnit;
-        performUpgrades(map, coordx, coordy);
+      if(placeUnit(map, &currentUnit, coordx, coordy)) {
         currentUnit = randomUnit();
       }
       break;
