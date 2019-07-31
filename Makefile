@@ -1,14 +1,29 @@
-OBJS = $(wildcard *.c)
-CC = c99
-COMPILER_FLAGS = -Wall -pedantic
-LINKER_FLAGS = -lSDL2 -lSDL2_image
-OBJ_NAME = jandu
+# include make configuration
+include config.mk
 
-#This is the target that compiles our executable
-all : $(OBJS)
-	mkdir -p build
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o build/$(OBJ_NAME)
+ # include darwin specific overrides
+ifeq ($(shell uname -s),Darwin)
+include config-darwin.mk
+endif
 
-.PHONY: clean
-clean :
-	rm -rf build
+# collect sources and headers
+source_files:=$(shell find $(src_dir) -name "*.c")
+header_files:=$(shell find $(src_dir) -name "*.h")
+
+all: options $(build_dir)/$(target) 
+
+options:
+	@echo "Building $(target)"
+	@echo "CC      = $(CC)"
+	@echo "CFLAGS  = $(CFLAGS)"
+	@echo "LDFLAGS = $(LDFLAGS)"
+	@echo ""
+
+$(build_dir)/$(target): $(source_files)
+	@mkdir -p $(build_dir)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(source_files)
+
+clean:
+	rm -f $(build_dir)/$(target)
+
+.PHONY: all options clean
