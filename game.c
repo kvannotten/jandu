@@ -241,7 +241,7 @@ void SDLListenForEvents(Map* map, bool* quit) {
       break;
 
     case SDL_KEYDOWN:
-      if(e.key.keysym.sym == SDLK_q) {
+      if(e.key.keysym.sym == SDLK_q || e.key.keysym.sym == SDLK_ESCAPE) {
         *quit = true;
       } else if(e.key.keysym.sym == SDLK_p) {
         printMap(map);
