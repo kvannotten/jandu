@@ -1,7 +1,7 @@
 target:=jandu
 
 project_dir:=$(CURDIR)
-src_dir:=$(project_dir)
+src_dir:=$(project_dir)/src
 build_dir:=$(project_dir)/build
 
 CC:=c99
