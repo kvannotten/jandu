@@ -5,5 +5,5 @@ src_dir:=$(project_dir)/src
 build_dir:=$(project_dir)/build
 
 CC:=c99
-CFLAGS:=-Wall -pedantic
+CFLAGS:=-Wall -pedantic -lm
 LDFLAGS:=-lSDL2 -lSDL2_image

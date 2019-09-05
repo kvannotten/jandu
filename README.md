@@ -8,13 +8,15 @@ Can you make it all the way to building a skyscraper before grumpy cats overrun 
 ## Building and running
 ### Requirements
 Make sure you have SDL2 and SDL2_Image installed. These should be in your package manager.
-In Arch Linux you can do: `yay sdl2` and select all the sdl2 entries.
+- In Arch Linux you can do: `yay sdl2` and select all the sdl2 entries.
+- In Debian, `apt-get install libsdl2-dev libsdl2-image-dev` should do the trick.
 
 ### Building
 Run `make all` in the root directory. This should create a build directory with an executable in. 
 
 ### Running
 From the root directory run: `build/jandu`.
+To exit the game either press Q or Esc.
 
 ## How to
 Each turn you get 1 unit you can place on the map. When you can place similar units adjacent to each other they will upgrade to the next level. Try to cluster them together and upgrade all the way to a skyscraper.
